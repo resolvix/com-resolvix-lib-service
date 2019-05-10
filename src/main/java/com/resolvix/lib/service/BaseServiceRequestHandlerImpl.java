@@ -3,6 +3,7 @@ package com.resolvix.lib.service;
 import com.resolvix.lib.service.api.ServiceException;
 
 /**
+ * Base implementation of a service request handler.
  *
  * @param <Q> the request type
  * @param <R> the response type
