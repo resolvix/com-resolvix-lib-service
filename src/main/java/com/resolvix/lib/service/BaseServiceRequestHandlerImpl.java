@@ -8,10 +8,9 @@ import com.resolvix.lib.service.api.ServiceFault;
  *
  * @param <Q> the request type
  * @param <R> the response type
- * @param <F> the fault type
  * @param <C> the context type
  */
-public abstract class BaseServiceRequestHandlerImpl<Q, R, F extends ServiceFault, C> {
+public abstract class BaseServiceRequestHandlerImpl<Q, R, C> {
 
     protected BaseServiceRequestHandlerImpl() {
         //
@@ -24,7 +23,7 @@ public abstract class BaseServiceRequestHandlerImpl<Q, R, F extends ServiceFault
         throws ServiceException, ServiceFault;
 
     protected void preprocess(C c)
-        throws ServiceException, ServiceFault { };
+        throws ServiceException, ServiceFault { }
 
     protected abstract void process(C c)
         throws ServiceException, ServiceFault;
@@ -38,8 +37,11 @@ public abstract class BaseServiceRequestHandlerImpl<Q, R, F extends ServiceFault
     protected abstract R respond(C c, ServiceException e)
         throws ServiceFault;
 
+    protected abstract <E extends Exception> E fault(C c, ServiceFault sf)
+        throws Exception;
+
     public R execute(Q q)
-        throws ServiceFault
+        throws Exception
     {
         C c = null;
         try {
@@ -52,7 +54,7 @@ public abstract class BaseServiceRequestHandlerImpl<Q, R, F extends ServiceFault
         } catch (ServiceException se) {
             return respond(c, se);
         } catch (ServiceFault sf) {
-            throw sf;
+            throw fault(c, sf);
         }
     }
 }
