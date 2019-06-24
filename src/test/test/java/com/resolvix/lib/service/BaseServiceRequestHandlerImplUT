@@ -1,0 +1,87 @@
+package com.resolvix.lib.service.esp;
+
+import com.resolvix.lib.service.api.ServiceException;
+import com.resolvix.lib.service.api.ServiceFault;
+import com.resolvix.lib.service.esb.BaseEsbServiceRequestHandlerImpl;
+import org.junit.Test;
+
+class BaseEsbServiceRequestHandlerImplUT
+{
+    private static class LocalRequestType {
+
+    }
+
+    private static class LocalResponseType {
+
+    }
+
+    private interface IContextType {
+
+    }
+
+    private static class LocalContextType
+        implements IContextType
+    {
+
+        private LocalRequestType request;
+
+        public LocalContextType(
+                LocalRequestType request) {
+            this.request = request;
+        }
+    }
+
+    private static class LocalRequestHandler
+        extends BaseEsbServiceRequestHandlerImpl<
+                LocalRequestType,
+                LocalResponseType,
+                IContextType>
+    {
+        public LocalRequestHandler() {
+            super();
+        }
+
+        @Override
+        protected IContextType initialise(
+                LocalRequestType q) {
+            return new LocalContextType(q);
+        }
+
+        @Override
+        protected void process(
+                IContextType c)
+            throws ServiceException, ServiceFault {
+
+        }
+
+        @Override
+        protected LocalResponseType respond(
+                IContextType c)
+            throws ServiceException, ServiceFault {
+            return null;
+        }
+
+        @Override
+        protected LocalResponseType respond(
+                IContextType c,
+                ServiceException e)
+            throws ServiceFault {
+            return null;
+        }
+
+        @Override
+        protected <E extends Exception> E fault(
+                IContextType c,
+                ServiceFault sf)
+            throws Exception {
+            return null;
+        }
+    }
+
+    @Test
+    public void RequestHandlerTest() {
+
+
+
+    }
+}
