@@ -2,6 +2,10 @@ package com.resolvix.lib.service;
 
 import com.resolvix.lib.service.api.ServiceException;
 import com.resolvix.lib.service.api.ServiceFault;
+import org.slf4j.Logger;
+import org.slf4j.MDC;
+
+import java.util.UUID;
 
 /**
  * Base implementation of a service request handler.
@@ -16,8 +20,13 @@ public abstract class BaseServiceRequestHandlerImpl<Q, R, C> {
         //
     }
 
-    protected abstract C initialise(Q q)
-        throws ServiceException, ServiceFault;
+    protected abstract Logger getLogger();
+
+    protected void begin(UUID contextId) {
+        getLogger().info("BEGIN contextId: {}", contextId);
+    }
+
+    protected abstract C initialise(UUID contextId, Q q);
 
     protected abstract void validate(C c)
         throws ServiceException, ServiceFault;
@@ -43,9 +52,12 @@ public abstract class BaseServiceRequestHandlerImpl<Q, R, C> {
     public R execute(Q q)
         throws Exception
     {
+        UUID contextId = UUID.randomUUID();
+        begin(contextId);
+        MDC.put("contextId", contextId.toString());
         C c = null;
         try {
-            c = initialise(q);
+            c = initialise(contextId, q);
             validate(c);
             preprocess(c);
             process(c);
@@ -55,6 +67,13 @@ public abstract class BaseServiceRequestHandlerImpl<Q, R, C> {
             return respond(c, se);
         } catch (ServiceFault sf) {
             throw fault(c, sf);
+        } finally {
+            MDC.clear();
+            end(contextId);
         }
+    }
+
+    protected void end(UUID contextId) {
+        getLogger().info("END contextId: {}", contextId);
     }
 }
