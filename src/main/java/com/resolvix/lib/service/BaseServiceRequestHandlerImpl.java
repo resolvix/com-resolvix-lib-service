@@ -3,8 +3,6 @@ package com.resolvix.lib.service;
 import com.resolvix.lib.service.api.ServiceException;
 import com.resolvix.lib.service.api.ServiceFault;
 
-import javax.xml.ws.WebServiceException;
-
 /**
  * Base implementation of a service request handler.
  *
@@ -18,7 +16,8 @@ public abstract class BaseServiceRequestHandlerImpl<Q, R, C> {
         //
     }
 
-    protected abstract C initialise(Q q);
+    protected abstract C initialise(Q q)
+        throws ServiceException, ServiceFault;
 
     protected abstract void validate(C c)
         throws ServiceException, ServiceFault;
