@@ -44,7 +44,7 @@ public abstract class BaseServiceRequestHandlerImpl<Q, R, C> {
     public R execute(Q q)
         throws Exception
     {
-        C c = initialise(Q q);
+        C c = initialise(q);
         try {
             validate(c);
             preprocess(c);
