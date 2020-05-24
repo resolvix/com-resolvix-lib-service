@@ -46,8 +46,9 @@ public abstract class BaseServiceRequestHandlerImpl<Q, R, C> {
     protected abstract R respond(C c, ServiceException e)
         throws ServiceFault;
 
-    protected abstract <E extends Exception> E fault(C c, ServiceFault sf)
-        throws Exception;
+    protected abstract <E extends Exception> E fault(C c, ServiceFault sf);
+
+    protected abstract <E extends Exception> E fault(Q q, Exception e);
 
     public R execute(Q q)
         throws Exception
@@ -55,18 +56,21 @@ public abstract class BaseServiceRequestHandlerImpl<Q, R, C> {
         UUID contextId = UUID.randomUUID();
         begin(contextId);
         MDC.put("contextId", contextId.toString());
-        C c = null;
         try {
-            c = initialise(contextId, q);
-            validate(c);
-            preprocess(c);
-            process(c);
-            postprocess(c);
-            return respond(c);
-        } catch (ServiceException se) {
-            return respond(c, se);
-        } catch (ServiceFault sf) {
-            throw fault(c, sf);
+            C c = initialise(contextId, q);
+            try {
+                validate(c);
+                preprocess(c);
+                process(c);
+                postprocess(c);
+                return respond(c);
+            } catch (ServiceException se) {
+                return respond(c, se);
+            } catch (ServiceFault sf) {
+                throw fault(c, sf);
+            }
+        } catch (Exception e) {
+            throw fault(q, e);
         } finally {
             MDC.clear();
             end(contextId);
