@@ -16,8 +16,7 @@ public abstract class BaseServiceRequestHandlerImpl<Q, R, C> {
         //
     }
 
-    protected abstract C initialise(Q q)
-        throws ServiceException, ServiceFault;
+    protected abstract C initialise(Q q);
 
     protected abstract void validate(C c)
         throws ServiceException, ServiceFault;
