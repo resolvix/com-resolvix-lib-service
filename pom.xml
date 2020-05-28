@@ -15,6 +15,9 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
 
+    <jaxrpc-api.version>1.1.2</jaxrpc-api.version>
+    <jaxws-api.version>2.3.1</jaxws-api.version>
+
     <!-- Unit test dependencies -->
     <junit-junit.version>4.11</junit-junit.version>
     <org-hamcrest-hamcrest-all.version>1.3</org-hamcrest-hamcrest-all.version>
@@ -22,6 +25,24 @@
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>javax.xml.rpc</groupId>
+      <artifactId>javax.xml.rpc-api</artifactId>
+      <version>${jaxrpc-api.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.xml.ws</groupId>
+      <artifactId>jaxws-api</artifactId>
+      <version>${jaxws-api.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.30</version>
+    </dependency>
+
     <!-- Unit test dependencies -->
     <dependency>
       <groupId>junit</groupId>
