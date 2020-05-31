@@ -1,4 +1,4 @@
-package com.resolvix.lib.service.api;
+package com.resolvix.lib.javax.jax.ws.service.api;
 
 /**
  * An exception indicative of a modelled fault within the scope of the

@@ -1,7 +1,7 @@
-package com.resolvix.lib.service;
+package com.resolvix.lib.javax.jax.ws.service;
 
-import com.resolvix.lib.service.api.ServiceException;
-import com.resolvix.lib.service.api.ServiceFault;
+import com.resolvix.lib.javax.jax.ws.service.api.ServiceException;
+import com.resolvix.lib.javax.jax.ws.service.api.ServiceFault;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -50,7 +50,7 @@ public class BaseServiceRequestHandlerImplUT {
     }
 
     private static class LocalServiceRequestHandlerImpl
-        extends BaseServiceRequestHandlerImpl<BaseLocalRequest, BaseLocalResponse, LocalContext>
+        extends BaseWsServiceRequestHandlerImpl<BaseLocalRequest, BaseLocalResponse, LocalContext>
     {
 
         @Override

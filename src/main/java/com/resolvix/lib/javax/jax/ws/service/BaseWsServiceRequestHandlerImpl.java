@@ -1,7 +1,7 @@
-package com.resolvix.lib.service;
+package com.resolvix.lib.javax.jax.ws.service;
 
-import com.resolvix.lib.service.api.ServiceException;
-import com.resolvix.lib.service.api.ServiceFault;
+import com.resolvix.lib.javax.jax.ws.service.api.ServiceException;
+import com.resolvix.lib.javax.jax.ws.service.api.ServiceFault;
 
 /**
  * Base implementation of a service request handler.
@@ -10,9 +10,9 @@ import com.resolvix.lib.service.api.ServiceFault;
  * @param <R> the response type
  * @param <C> the context type
  */
-public abstract class BaseServiceRequestHandlerImpl<Q, R, C> {
+public abstract class BaseWsServiceRequestHandlerImpl<Q, R, C> {
 
-    protected BaseServiceRequestHandlerImpl() {
+    protected BaseWsServiceRequestHandlerImpl() {
         //
     }
 

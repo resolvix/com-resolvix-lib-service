@@ -1,6 +1,5 @@
-package com.resolvix.lib.service;
+package com.resolvix.lib.javax.jax.ws.service;
 
-import net.bytebuddy.asm.Advice;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,7 +11,7 @@ public class BaseServiceImplUT {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseServiceImplUT.class);
 
     private static class LocalServiceImpl
-        extends BaseServiceImpl
+        extends BaseWsServiceImpl
     {
 
         LocalServiceImpl() {

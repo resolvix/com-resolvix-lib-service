@@ -1,4 +1,4 @@
-package com.resolvix.lib.service.ws;
+package com.resolvix.lib.javax.jax.ws.handler;
 
 import org.slf4j.Logger;
 

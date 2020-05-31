@@ -1,4 +1,4 @@
-package com.resolvix.lib.service.rpc;
+package com.resolvix.lib.javax.jax.rpc.handler;
 
 import org.slf4j.Logger;
 

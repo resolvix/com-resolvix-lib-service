@@ -1,4 +1,4 @@
-package com.resolvix.lib.service.builder;
+package com.resolvix.lib.javax.jax.ws.service.builder;
 
 /**
  * A base implementation of an element builder class for a root element, or
@@ -12,9 +12,9 @@ package com.resolvix.lib.service.builder;
  * @param <S> the element builder subclass type
  * @param <R> the return type
  */
-public abstract class BaseElementBuilder<S extends BaseElementBuilder<S, R>, R> {
+public abstract class BaseWsElementBuilder<S extends BaseWsElementBuilder<S, R>, R> {
 
-    public BaseElementBuilder() {
+    public BaseWsElementBuilder() {
         //
     }
 
