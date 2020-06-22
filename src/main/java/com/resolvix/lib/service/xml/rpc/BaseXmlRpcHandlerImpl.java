@@ -1,4 +1,4 @@
-package com.resolvix.lib.service.rpc;
+package com.resolvix.lib.service.xml.rpc;
 
 import org.slf4j.Logger;
 
@@ -7,7 +7,7 @@ import javax.xml.rpc.handler.Handler;
 import javax.xml.rpc.handler.HandlerInfo;
 import javax.xml.rpc.handler.MessageContext;
 
-public abstract class BaseRpcHandlerImpl
+public abstract class BaseXmlRpcHandlerImpl
     implements Handler
 {
     protected abstract Logger getLogger();

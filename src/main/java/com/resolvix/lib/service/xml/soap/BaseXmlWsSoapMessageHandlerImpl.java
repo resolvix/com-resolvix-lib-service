@@ -1,4 +1,4 @@
-package com.resolvix.lib.service.soap;
+package com.resolvix.lib.service.xml.soap;
 
 import org.slf4j.Logger;
 
@@ -9,7 +9,7 @@ import javax.xml.ws.handler.soap.SOAPMessageContext;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class BaseSoapMessageHandlerImpl
+public abstract class BaseXmlWsSoapMessageHandlerImpl
     implements SOAPHandler<SOAPMessageContext>
 {
     protected abstract Logger getLogger();
