@@ -1,13 +1,12 @@
 package com.resolvix.lib.service.xml.ws;
 
-import com.resolvix.lib.service.api.ServiceEventHandler;
+import com.resolvix.service.event.handler.api.ServiceEventHandler;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
+import javax.xml.XMLConstants;
+import javax.xml.transform.*;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.ws.LogicalMessage;
 import javax.xml.ws.ProtocolException;
@@ -16,22 +15,40 @@ import javax.xml.ws.handler.LogicalMessageContext;
 import javax.xml.ws.handler.MessageContext;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.UUID;
 
-public abstract class BaseXmlWsMessageHandlerImpl<E extends Enum<E>>
+public class ServiceLoggingXmlWsMessageHandlerImpl
+    extends BaseXmlWsHandlerImpl<LogicalMessageContext>
     implements LogicalHandler<LogicalMessageContext>
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceLoggingXmlWsMessageHandlerImpl.class);
+
     private static final String NO_MESSAGE_SOURCE = "<none>";
 
-    @Inject
-    private ServiceEventHandler<E> serviceEventHandler;
+    private static final TransformerFactory getTransformerFactory() {
+        try {
+            TransformerFactory tf = TransformerFactory.newInstance();
+            tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+            tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            return tf;
+        } catch (TransformerConfigurationException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
-    protected abstract Logger getLogger();
+    private static final TransformerFactory TRANSFORMER_FACTORY = getTransformerFactory();
+
+    @Inject
+    private ServiceEventHandler<?> serviceEventHandler;
+
+    protected Logger getLogger() {
+        return LOGGER;
+    }
 
     protected String getSource(Source source)
-        throws Exception
+        throws TransformerException
     {
-        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        Transformer transformer = TRANSFORMER_FACTORY.newTransformer();
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
         transformer.setOutputProperty(OutputKeys.METHOD, "xml");
         Writer out = new StringWriter();
@@ -42,10 +59,11 @@ public abstract class BaseXmlWsMessageHandlerImpl<E extends Enum<E>>
     }
 
     protected boolean handleInboundMessage(LogicalMessageContext logicalMessageContext)
-        throws Exception
+        throws TransformerException
     {
-        String contextId = UUID.randomUUID().toString();
-        logicalMessageContext.put("contextId", contextId);
+        String contextId = computePropertyIfAbsent(
+            logicalMessageContext, MessageContext.Scope.APPLICATION,
+            "contextId", ServiceLoggingXmlWsMessageHandlerImpl::getUuid);
         LogicalMessage logicalMessage = logicalMessageContext.getMessage();
         Source source = logicalMessage.getPayload();
         serviceEventHandler.handleRequest(
@@ -54,9 +72,9 @@ public abstract class BaseXmlWsMessageHandlerImpl<E extends Enum<E>>
     }
 
     protected boolean handleOutboundMessage(LogicalMessageContext logicalMessageContext)
-        throws Exception
+        throws TransformerException
     {
-        String contextId = (String) logicalMessageContext.get("contextId");
+        String contextId = getProperty(logicalMessageContext,"contextId", String.class);
         if (contextId == null)
             throw new ProtocolException("contextId not set.");
         LogicalMessage logicalMessage = logicalMessageContext.getMessage();
@@ -81,14 +99,32 @@ public abstract class BaseXmlWsMessageHandlerImpl<E extends Enum<E>>
         }
     }
 
-    @Override
-    public boolean handleFault(LogicalMessageContext logicalMessageContext) {
-        getLogger().debug("BaseWsMessageHandlerImpl::handleFault invoked.");
+    protected boolean handleFaultMessage(LogicalMessageContext logicalMessageContext)
+        throws TransformerException
+    {
+        String contextId = getProperty(logicalMessageContext,"contextId", String.class);
+        if (contextId == null)
+            throw new ProtocolException("contextId not set.");
+        LogicalMessage logicalMessage = logicalMessageContext.getMessage();
+        Source source = logicalMessage.getPayload();
+        serviceEventHandler.handleFault(
+            contextId, (source != null) ? getSource(source) : NO_MESSAGE_SOURCE);
         return true;
     }
 
     @Override
+    public boolean handleFault(LogicalMessageContext logicalMessageContext) {
+        getLogger().debug("BaseWsMessageHandlerImpl::handleFault invoked.");
+        try {
+            return handleFaultMessage(logicalMessageContext);
+        } catch (Exception e) {
+            throw new ProtocolException(e);
+        }
+    }
+
+    @Override
     public void close(MessageContext messageContext) {
+        super.close(messageContext);
         getLogger().debug("BaseWsMessageHandlerImpl::close invoked.");
     }
 }

@@ -37,11 +37,11 @@ public abstract class BaseServiceRequestHandlerImpl<Q, R, C> {
     protected abstract R respond(C c, ServiceException e)
         throws ServiceFault;
 
-    protected abstract <E extends Exception> E fault(C c, ServiceFault sf)
-        throws Exception;
+    protected abstract <T extends Throwable> T fault(C c, ServiceFault sf)
+        throws Throwable;
 
     public R execute(Q q)
-        throws Exception
+        throws Throwable
     {
         C c = null;
         try {

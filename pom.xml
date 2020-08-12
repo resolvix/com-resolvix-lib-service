@@ -57,6 +57,31 @@
       <version>1.7.30</version>
     </dependency>
 
+    <dependency>
+      <groupId>com.resolvix</groupId>
+      <artifactId>service-management-api-jar</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.resolvix</groupId>
+      <artifactId>service-management-impl-jar</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.resolvix</groupId>
+      <artifactId>service-event-handler-api-jar</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.resolvix</groupId>
+      <artifactId>service-event-handler-database-impl-jar</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+
     <!-- Unit test dependencies -->
     <dependency>
       <groupId>junit</groupId>

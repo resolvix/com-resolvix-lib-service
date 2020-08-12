@@ -85,8 +85,8 @@ public class BaseServiceRequestHandlerImplUT {
 
         @Override
         @SuppressWarnings("unchecked")
-        protected <E extends Exception> E fault(LocalContext localContext, ServiceFault sf) throws Exception {
-            return (E) new LocalFaultResponse();
+        protected <T extends Throwable> T fault(LocalContext localContext, ServiceFault sf) throws Exception {
+            return (T) new LocalFaultResponse();
         }
     }
 
@@ -96,21 +96,21 @@ public class BaseServiceRequestHandlerImplUT {
     private LocalServiceRequestHandlerImpl requestHandler = new LocalServiceRequestHandlerImpl();
 
     @Test
-    public void successfulRequest() throws Exception {
+    public void successfulRequest() throws Throwable {
         LocalWellFormedRequest request = new LocalWellFormedRequest();
         BaseLocalResponse response = requestHandler.execute(request);
         Assert.assertThat(response, Matchers.instanceOf(LocalSuccessfulResponse.class));
     }
 
     @Test
-    public void unsuccessfulRequest() throws Exception {
+    public void unsuccessfulRequest() throws Throwable {
         LocalErroneousRequest request = new LocalErroneousRequest();
         BaseLocalResponse response = requestHandler.execute(request);
         Assert.assertThat(response, Matchers.instanceOf(LocalUnsuccessfulResponse.class));
     }
 
     @Test
-    public void faultyRequest() throws Exception {
+    public void faultyRequest() throws Throwable {
         thrown.expect(LocalFaultResponse.class);
         LocalFaultyRequest request = new LocalFaultyRequest();
         BaseLocalResponse response = requestHandler.execute(request);

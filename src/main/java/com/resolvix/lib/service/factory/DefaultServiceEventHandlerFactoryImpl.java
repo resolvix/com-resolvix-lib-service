@@ -1,7 +1,7 @@
 package com.resolvix.lib.service.factory;
 
-import com.resolvix.lib.service.DefaultServiceEventHandlerImpl;
-import com.resolvix.lib.service.api.ServiceEventHandler;
+import com.resolvix.service.event.handler.DefaultServiceEventHandlerImpl;
+import com.resolvix.service.event.handler.api.ServiceEventHandler;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
