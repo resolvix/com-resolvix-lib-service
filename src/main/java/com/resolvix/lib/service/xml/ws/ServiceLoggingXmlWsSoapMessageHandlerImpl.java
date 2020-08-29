@@ -8,14 +8,14 @@ import javax.inject.Inject;
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.SOAPPart;
 import javax.xml.transform.Source;
+import javax.xml.transform.TransformerException;
 import javax.xml.ws.LogicalMessage;
 import javax.xml.ws.ProtocolException;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.Set;
@@ -56,20 +56,6 @@ public class ServiceLoggingXmlWsSoapMessageHandlerImpl
         return LOGGER;
     }
 
-    private String toXml(SOAPMessage soapMessage, String charsetName)
-        throws SOAPException, IOException
-    {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        soapMessage.writeTo(byteArrayOutputStream);
-        return byteArrayOutputStream.toString(charsetName);
-    }
-
-    private String toXml(SOAPMessage soapMessage)
-        throws SOAPException, IOException
-    {
-        return toXml(soapMessage, DEFAULT_CHAR_SET_NAME);
-    }
-
     @Override
     public Set<QName> getHeaders() {
         getLogger().debug("BaseSoapMessageHandlerImpl::getHeaders invoked.");
@@ -77,26 +63,30 @@ public class ServiceLoggingXmlWsSoapMessageHandlerImpl
     }
 
     protected boolean handleInboundMessage(SOAPMessageContext soapMessageContext)
-        throws SOAPException, IOException
+        throws SOAPException, TransformerException
     {
         String contextId = computePropertyIfAbsent(
             soapMessageContext, MessageContext.Scope.APPLICATION,
             "contextId", ServiceLoggingXmlWsMessageHandlerImpl::getUuid);
         SOAPMessage soapMessage = soapMessageContext.getMessage();
+        SOAPPart soapPart = soapMessage.getSOAPPart();
+        Source source = soapPart.getContent();
         serviceEventHandler.handleRequest(
-            contextId, (soapMessage != null) ? toXml(soapMessage) : NO_MESSAGE_SOURCE);
+            contextId, (soapMessage != null) ? getSource(source) : NO_MESSAGE_SOURCE);
         return true;
     }
 
     protected boolean handleOutboundMessage(SOAPMessageContext soapMessageContext)
-        throws SOAPException, IOException
+        throws SOAPException, TransformerException
     {
         String contextId = getProperty(soapMessageContext, "contextId", String.class);
         if (contextId == null)
             throw new ProtocolException("contextId not set.");
         SOAPMessage soapMessage = soapMessageContext.getMessage();
+        SOAPPart soapPart = soapMessage.getSOAPPart();
+        Source source = soapPart.getContent();
         serviceEventHandler.handleResponse(
-            contextId, (soapMessage != null) ? toXml(soapMessage) : NO_MESSAGE_SOURCE);
+            contextId, (soapMessage != null) ? getSource(source) : NO_MESSAGE_SOURCE);
         return true;
     }
 
@@ -116,14 +106,16 @@ public class ServiceLoggingXmlWsSoapMessageHandlerImpl
     }
 
     protected boolean handleFaultMessage(SOAPMessageContext soapMessageContext)
-        throws SOAPException, IOException
+        throws SOAPException, TransformerException
     {
         String contextId = getProperty(soapMessageContext,"contextId", String.class);
         if (contextId == null)
             throw new ProtocolException("contextId not set.");
         SOAPMessage soapMessage = soapMessageContext.getMessage();
+        SOAPPart soapPart = soapMessage.getSOAPPart();
+        Source source = soapPart.getContent();
         serviceEventHandler.handleFault(
-            contextId, (soapMessage != null) ? toXml(soapMessage) : NO_MESSAGE_SOURCE);
+            contextId, (soapMessage != null) ? getSource(source) : NO_MESSAGE_SOURCE);
         return true;
     }
 

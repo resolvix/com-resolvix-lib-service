@@ -1,8 +1,18 @@
 package com.resolvix.lib.service.xml.ws;
 
+import javax.xml.XMLConstants;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.ws.handler.Handler;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.MessageContext.Scope;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.UUID;
@@ -16,6 +26,20 @@ abstract class BaseXmlWsHandlerImpl<C extends MessageContext>
     }
 
     protected static final String MESSAGE_CONTEXT_HANDLER_STACK_PROPERTY_KEY = getUuid();
+
+    private static final TransformerFactory getTransformerFactory() {
+        try {
+            TransformerFactory tf = TransformerFactory.newInstance();
+            tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+            tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            return tf;
+        } catch (TransformerConfigurationException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    protected static final TransformerFactory TRANSFORMER_FACTORY = getTransformerFactory();
 
     protected BaseXmlWsHandlerImpl() {
         //
@@ -126,6 +150,33 @@ abstract class BaseXmlWsHandlerImpl<C extends MessageContext>
         V value = supplierV.get();
         setProperty(messageContext, scope, key, value);
         return value;
+    }
+
+    /**
+     * Return the XML source from the {@link Source} object represented by the
+     * {@code source} parameter.
+     *
+     * @implNote Transformation of the {@link Source} to XML is performed by
+     * a {@link Transformer} that accords with the W3C's standard(s) on
+     * <a href="https://www.w3.org/TR/xslt-xquery-serialization-30/">XML and
+     * XQuery Serialization</a>.
+     *
+     * @param source the XML source object
+     * @return the XML source
+     * @throws TransformerException
+     */
+    protected String getSource(Source source)
+        throws TransformerException
+    {
+        Transformer transformer = TRANSFORMER_FACTORY.newTransformer();
+        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+        transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+        transformer.setOutputProperty(OutputKeys.ENCODING, "utf-8");
+        Writer out = new StringWriter();
+        StreamResult streamResult = new StreamResult();
+        streamResult.setWriter(out);
+        transformer.transform(source, streamResult);
+        return streamResult.getWriter().toString();
     }
 
     @Override

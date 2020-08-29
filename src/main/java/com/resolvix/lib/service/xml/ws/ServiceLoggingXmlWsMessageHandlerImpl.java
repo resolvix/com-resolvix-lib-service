@@ -5,16 +5,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.xml.XMLConstants;
-import javax.xml.transform.*;
-import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.Source;
+import javax.xml.transform.TransformerException;
 import javax.xml.ws.LogicalMessage;
 import javax.xml.ws.ProtocolException;
 import javax.xml.ws.handler.LogicalHandler;
 import javax.xml.ws.handler.LogicalMessageContext;
 import javax.xml.ws.handler.MessageContext;
-import java.io.StringWriter;
-import java.io.Writer;
 
 /**
  * A service logging implementation based on a logical message handler.
@@ -47,38 +44,11 @@ public class ServiceLoggingXmlWsMessageHandlerImpl
 
     private static final String NO_MESSAGE_SOURCE = "<none>";
 
-    private static final TransformerFactory getTransformerFactory() {
-        try {
-            TransformerFactory tf = TransformerFactory.newInstance();
-            tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-            tf.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
-            tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-            return tf;
-        } catch (TransformerConfigurationException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    private static final TransformerFactory TRANSFORMER_FACTORY = getTransformerFactory();
-
     @Inject
     private ServiceEventHandler<?> serviceEventHandler;
 
     protected Logger getLogger() {
         return LOGGER;
-    }
-
-    protected String getSource(Source source)
-        throws TransformerException
-    {
-        Transformer transformer = TRANSFORMER_FACTORY.newTransformer();
-        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-        transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-        Writer out = new StringWriter();
-        StreamResult streamResult = new StreamResult();
-        streamResult.setWriter(out);
-        transformer.transform(source, streamResult);
-        return streamResult.getWriter().toString();
     }
 
     protected boolean handleInboundMessage(LogicalMessageContext logicalMessageContext)
