@@ -60,12 +60,14 @@ public class BaseXmlWsHandlerImplUT {
         }
 
         public boolean handleFaultMessage(MessageContext messageContext) {
+            String contextId = getProperty(messageContext, "contextId", String.class);
+            LOGGER.debug("handleFaultMessage [contextId]: {}", contextId);
             return true;
         }
 
         @Override
         public boolean handleFault(MessageContext messageContext) {
-            return true;
+            return handleFaultMessage(messageContext);
         }
     }
 
